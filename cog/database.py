@@ -33,6 +33,19 @@ class Database(commands.Cog):
                 embed.add_field(name=result['name'], value=result['address'])
             return await ctx.send(embed=embed)
 
+        @bot.command()
+        async def delete(ctx, name):
+            """
+            Deletes a server
+            :param ctx:
+            :param name:
+            :return:
+            """
+            result = bot.db.servers.delete_one({'discord_server': ctx.guild.id, 'name': name})
+            if not result.deleted_count:
+                return await ctx.send("The server was not found, and therefore not deleted!")
+            return await ctx.send(f'Server `{name}` was removed!')
+
 
 def setup(bot):
     bot.add_cog(Database(bot))
