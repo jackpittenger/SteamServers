@@ -12,5 +12,5 @@ MONGO_DATABASE=
 ## License
 GNU GPLv3 - You may use this code, however, you must disclose you got it from here. 
 This includes publicly attributing it in your Discord bot. 
-##Contributors
+## Contributors
 <b>realSaddy</b> - Manager, main coder
