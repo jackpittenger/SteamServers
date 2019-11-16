@@ -1,20 +1,3 @@
 {
-  "extends": [
-    "@commitlint/config-conventional"
-  ],
-  "rules": {
-    "scope-case": [
-      2,
-      "always",
-      [
-        "camel-case",
-        "kebab-case",
-        "upper-case"
-      ]
-    ],
-    "subject-case": [
-      0,
-      "always"
-    ]
-  }
+  "extends": ["@commitlint/config-conventional"]
 }
