@@ -1,3 +1,4 @@
+import discord
 from discord.ext import commands
 
 
@@ -23,11 +24,14 @@ class Database(commands.Cog):
             :param ctx:
             :return:
             """
-            results = bot.db.servers.find({})
+            results = bot.db.servers.find({'discord_server': ctx.guild.id})
             if not results.count():
-                return await ctx.send("No servers added! Add one with !create")
+                return await ctx.send("No servers added! Add one with s!create")
+            embed = discord.Embed(title="Server list",
+                                  type='rich')
             for result in results:
-                print(result)
+                embed.add_field(name=result['name'], value=result['address'])
+            return await ctx.send(embed=embed)
 
 
 def setup(bot):
