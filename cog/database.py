@@ -5,6 +5,7 @@ from discord.ext import commands
 class Database(commands.Cog):
     def __init__(self, bot):
         @bot.command()
+        @commands.has_permissions(manage_guild=True)
         async def create(ctx, address, *, name):
             """
             Creates a server o call
@@ -34,6 +35,7 @@ class Database(commands.Cog):
             return await ctx.send(embed=embed)
 
         @bot.command()
+        @commands.has_permissions(manage_guild=True)
         async def delete(ctx, name):
             """
             Deletes a server
