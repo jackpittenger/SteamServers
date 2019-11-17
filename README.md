@@ -1,4 +1,4 @@
-[![CodeFactor](https://www.codefactor.io/repository/github/realsaddy/steamserv/badge)](https://www.codefactor.io/repository/github/realsaddy/steamserv) [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=586S5KMWTQRM4&source=url)
+[![CodeFactor](https://www.codefactor.io/repository/github/realsaddy/steamserv/badge)](https://www.codefactor.io/repository/github/realsaddy/steamserv) [![Maintainability](https://api.codeclimate.com/v1/badges/67a5e58948db048a37a5/maintainability)](https://codeclimate.com/github/realSaddy/SteamServ/maintainability) [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=586S5KMWTQRM4&source=url)
 # SteamServ
  A tool for receiving steam server information in Discord.
  This is an updated version of a previous build of realSaddy's (which used Node.js).
