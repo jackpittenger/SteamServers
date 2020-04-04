@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
-import valve.source.a2s as a2s
+import a2s
+import socket
 
 
 class Valve(commands.Cog):
@@ -14,8 +15,14 @@ class Valve(commands.Cog):
             :return:
             """
             data = address.split(":")
-            with a2s.ServerQuerier((data[0], int(data[1])), timeout=5) as server:
-                info = server.info()
+
+            try:
+                info = a2s.info((data[0], int(data[1])))
+            except socket.timeout:
+                return await ctx.send("Server timeout! Check the IP:Port")
+            except socket.gaierror:
+                return await ctx.send("Resolution error! Check the IP:Port")
+
             embed = discord.Embed(title="Server information",
                                   type='rich')
             embed.add_field(name="Address", value=address+"%s%s" % ((" 🛡" if (info['vac_enabled']) else ""),
@@ -27,6 +34,12 @@ class Valve(commands.Cog):
                                                                                      else ""))
             embed.add_field(name="Game", value=info['game'])
             return await ctx.send(embed=embed)
+
+        @query.error
+        async def do_repeat_handler(ctx, error):
+            if isinstance(error, commands.MissingRequiredArgument):
+                if error.param.name == 'address':
+                    await ctx.send("Please format your command like: `s!query 144.12.123.51:27017`")
 
 
 def setup(bot):
