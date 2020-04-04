@@ -1,0 +1,4 @@
+python-dotenv
+pymongo
+discord
+python-a2s
