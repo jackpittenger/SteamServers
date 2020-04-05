@@ -6,9 +6,10 @@ from helpers import query_logic
 class Database(commands.Cog):
     def __init__(self, bot):
         @bot.command()
+        @commands.has_permissions(manage_guild=True)
         async def create(ctx, address, *, name):
             """
-            Creates a server o call
+            Creates a server to call
             :param ctx:
             :param address:
             :param name:
@@ -16,8 +17,9 @@ class Database(commands.Cog):
             """
 
             # implement regex check
-            result = bot.db.servers.insert_one({'discord_server': ctx.guild.id, 'address': address, 'name': name})
-            print(result)
+            if bot.db.servers.find({'discord_server': ctx.guild.id}).count() >= 5:
+                return await ctx.send("Max servers reached! Please join the support server to request more servers")
+            bot.db.servers.insert_one({'discord_server': ctx.guild.id, 'address': address, 'name': name})
             return await ctx.send(f'Added `{address}` as `{name}`')
 
         @bot.command()
@@ -37,6 +39,7 @@ class Database(commands.Cog):
             return await ctx.send(embed=embed)
 
         @bot.command()
+        @commands.has_permissions(manage_guild=True)
         async def delete(ctx, name):
             """
             Deletes a server
