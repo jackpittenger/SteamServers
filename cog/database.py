@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from helpers import query_logic
 
 
 class Database(commands.Cog):
@@ -13,6 +14,8 @@ class Database(commands.Cog):
             :param name:
             :return:
             """
+
+            # implement regex check
             result = bot.db.servers.insert_one({'discord_server': ctx.guild.id, 'address': address, 'name': name})
             print(result)
             return await ctx.send(f'Added `{address}` as `{name}`')
@@ -45,6 +48,27 @@ class Database(commands.Cog):
             if not result.deleted_count:
                 return await ctx.send("The server was not found, and therefore not deleted!")
             return await ctx.send(f'Server `{name}` was removed!')
+
+        @bot.command()
+        async def status(ctx, name=""):
+            """
+            Displays  a saved server
+            :param ctx:
+            :param name:
+            :return:
+            """
+            results = bot.db.servers.find({'discord_server': ctx.guild.id})
+            if not results.count():
+                return await ctx.send("No servers added! Add one with s!create")
+            if name == "" and results.count() == 1:
+                server = results[0]
+            else:
+                result = bot.db.servers.find_one({'discord_server': ctx.guild.id, 'name':name})
+                if result:
+                    server = result
+                else:
+                    return await ctx.send("Invalid server! Please choose one from s!servers")
+            return await query_logic(ctx, server["address"])
 
 
 def setup(bot):
