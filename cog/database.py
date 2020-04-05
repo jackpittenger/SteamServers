@@ -74,5 +74,7 @@ class Database(commands.Cog):
             return await query_logic(ctx, server["address"])
 
 
+
+
 def setup(bot):
     bot.add_cog(Database(bot))

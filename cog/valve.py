@@ -1,10 +1,5 @@
 from discord.ext import commands
-<<<<<<< HEAD
 from helpers import query_logic
-=======
-import a2s
-import socket
->>>>>>> bdfb0bb94bff2117a284f35994b4a00d29c6265c
 
 
 class Valve(commands.Cog):
