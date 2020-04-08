@@ -7,10 +7,9 @@ class Valve(commands.Cog):
         @bot.command()
         async def query(ctx, address):
             """
-            Queries the server
-            :param ctx:
-            :param address:
-            :return:
+            Queries a server
+            s!query x.x.x.x:PORT
+            s!query 144.12.123.51:27017
             """
             return await query_logic(ctx, address)
 
@@ -18,9 +17,8 @@ class Valve(commands.Cog):
         async def pquery(ctx, address):
             """
             Lists players on a server
-            :param ctx:
-            :param address:
-            :return:
+            s!pquery x.x.x.x:PORT
+            s!pquery 144.12.123.51:27017
             """
             return await players_logic(ctx, address)
 

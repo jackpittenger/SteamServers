@@ -9,11 +9,9 @@ class Database(commands.Cog):
         @commands.has_permissions(manage_guild=True)
         async def create(ctx, address, *, name):
             """
-            Creates a server to call
-            :param ctx:
-            :param address:
-            :param name:
-            :return:
+            Creates a saved server
+            s!create x.x.x.x:27017 Name
+            s!create 144.12.123.51:27017 ToasterRP
             """
             if bot.db.servers.find({'discord_server': ctx.guild.id}).count() >= 5:
                 return await ctx.send("Max servers reached! Please join the support server to request more servers")
@@ -23,9 +21,8 @@ class Database(commands.Cog):
         @bot.command()
         async def servers(ctx):
             """
-            Returns a list of servers
-            :param ctx:
-            :return:
+            Returns a list of saved servers
+            s!servers
             """
             results = bot.db.servers.find({'discord_server': ctx.guild.id})
             if not results.count():
@@ -40,10 +37,9 @@ class Database(commands.Cog):
         @commands.has_permissions(manage_guild=True)
         async def delete(ctx, name):
             """
-            Deletes a server
-            :param ctx:
-            :param name:
-            :return:
+            Deletes a saved server
+            s!delete name
+            s!delete ToasterRP
             """
             result = bot.db.servers.delete_one({'discord_server': ctx.guild.id, 'name': name})
             if not result.deleted_count:
@@ -53,10 +49,10 @@ class Database(commands.Cog):
         @bot.command()
         async def status(ctx, name=""):
             """
-            Displays  a saved server
-            :param ctx:
-            :param name:
-            :return:
+            Queries a saved server. If you only have one server you don't need to specify a name.
+            s!status
+            s!status name
+            s!status ToasterRP
             """
             results = bot.db.servers.find({'discord_server': ctx.guild.id})
             if not results.count():
@@ -74,10 +70,10 @@ class Database(commands.Cog):
         @bot.command()
         async def players(ctx, name=""):
             """
-            Shows the players on a saved server
-            :param ctx:
-            :param name:
-            :return:
+            Shows the players on a saved server. If you only have one server you don't need to specify a name.
+            s!players
+            s!players name
+            s!players ToasterRP
             """
             results = bot.db.servers.find({'discord_server': ctx.guild.id})
             if not results.count():

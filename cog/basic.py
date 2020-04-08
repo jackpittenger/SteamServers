@@ -7,8 +7,7 @@ class Basic(commands.Cog):
         async def ping(ctx):
             """
             Pings the bot
-            :param ctx:
-            :return:
+            s!ping
             """
             return await ctx.send("Pong!")
 
