@@ -13,7 +13,7 @@ jobs:
 
     - name: Install packages
       run: |
-        sudo pip install -r requirements.txt
+        sudo pip3 install -r requirements.txt
     - name: Create .env
       run: |
         echo "TOKEN=${{ secrets.TOKEN }}" >> .env
