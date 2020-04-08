@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install packages
+      run: |
+        sudo pip install -r requirements.txt
+    - name: Create .env
+      run: |
+        echo "TOKEN=${{ secrets.TOKEN }}" >> .env
+        echo "MONGO_USERNAME=${{ secrets.MONGO_USERNAME }}" >> .env
+        echo "MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }}" >> .env
+        echo "MONGO_HOST=${{ secrets.MONGO_HOST }}" >> .env
+        echo "MONGO_DATABASE=${{ secrets.MONGO_DATABASE }}" >> .env
+    - name: Run server
+      run: |
+        pm2 restart index.py
