@@ -13,7 +13,8 @@ class Database(commands.Cog):
             s!create x.x.x.x:27017 Name
             s!create 144.12.123.51:27017 ToasterRP
             """
-            if bot.db.servers.find({'discord_server': ctx.guild.id}).count() >= 5:
+            if bot.db.servers.find({'discord_server': ctx.guild.id}).count() >= 5 and\
+                    ctx.guild.id != "353751307460542476":
                 return await ctx.send("Max servers reached! Please join the support server to request more servers")
             bot.db.servers.insert_one({'discord_server': ctx.guild.id, 'address': address, 'name': name})
             return await ctx.send(f'Added `{address}` as `{name}`')
@@ -35,7 +36,7 @@ class Database(commands.Cog):
 
         @bot.command()
         @commands.has_permissions(manage_guild=True)
-        async def delete(ctx, name):
+        async def delete(ctx, *, name):
             """
             Deletes a saved server
             s!delete name
@@ -47,7 +48,7 @@ class Database(commands.Cog):
             return await ctx.send(f'Server `{name}` was removed!')
 
         @bot.command()
-        async def status(ctx, name=""):
+        async def status(ctx, *, name=""):
             """
             Queries a saved server. If you only have one server you don't need to specify a name.
             s!status
@@ -57,7 +58,7 @@ class Database(commands.Cog):
             return await _check_sever(bot, ctx, name, query_logic)
 
         @bot.command()
-        async def players(ctx, name=""):
+        async def players(ctx, *, name=""):
             """
             Shows the players on a saved server. If you only have one server you don't need to specify a name.
             s!players
