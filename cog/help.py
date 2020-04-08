@@ -6,8 +6,8 @@ class Help(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-        @bot.command(pass_context=True)
-        async def help(ctx, command=None):
+        @bot.command(pass_context=True, name="help")
+        async def help_command(ctx, command=None):
             """
             Displays information about commands
             s!help
