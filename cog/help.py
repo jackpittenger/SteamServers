@@ -22,11 +22,11 @@ class Help(commands.Cog):
                             command_descriptions += '`{}` - {}'.format(y.name, y.help.split("\n")[0]) + '\n'
                     help_embed.add_field(name='Commands', value=command_descriptions, inline=False)
                     return await ctx.send('', embed=help_embed)
-                else:
-                    if not self.bot.get_command(command):
-                        return await ctx.send("Invalid command!")
-                    return await ctx.send('', embed=discord.Embed(title=command,
-                                                                  description=self.bot.get_command(command).help))
+
+                if not self.bot.get_command(command):
+                    return await ctx.send("Invalid command!")
+                return await ctx.send('', embed=discord.Embed(title=command,
+                                                              description=self.bot.get_command(command).help))
 
             except Exception as e:
                 print(e)
