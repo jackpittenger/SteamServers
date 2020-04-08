@@ -11,6 +11,8 @@ MONGO_USERNAME=
 MONGO_PASSWORD=
 MONGO_HOST=
 MONGO_DATABASE=
+DBL_TOKEN=
+DEBUG=
 ```
 ## License
 GNU GPLv3 - You may use this code, however, you must disclose you got it from here. 
