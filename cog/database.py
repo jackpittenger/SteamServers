@@ -54,18 +54,7 @@ class Database(commands.Cog):
             s!status name
             s!status ToasterRP
             """
-            results = bot.db.servers.find({'discord_server': ctx.guild.id})
-            if not results.count():
-                return await ctx.send("No servers added! Add one with s!create")
-            if name == "" and results.count() == 1:
-                server = results[0]
-            else:
-                result = bot.db.servers.find_one({'discord_server': ctx.guild.id, 'name':name})
-                if result:
-                    server = result
-                else:
-                    return await ctx.send("Invalid server! Please choose one from s!servers")
-            return await query_logic(ctx, server["address"])
+            return await _check_sever(bot, ctx, name, query_logic)
 
         @bot.command()
         async def players(ctx, name=""):
@@ -75,18 +64,23 @@ class Database(commands.Cog):
             s!players name
             s!players ToasterRP
             """
-            results = bot.db.servers.find({'discord_server': ctx.guild.id})
-            if not results.count():
-                return await ctx.send("No servers added! Add one with s!create")
-            if name == "" and results.count() == 1:
-                server = results[0]
-            else:
-                result = bot.db.servers.find_one({'discord_server': ctx.guild.id, 'name': name})
-                if result:
-                    server = result
-                else:
-                    return await ctx.send("Invalid server! Please choose one from s!servers")
-            return await players_logic(ctx, server["address"])
+            return await _check_sever(bot, ctx, name, players_logic)
+
+
+async def _check_sever(bot, ctx, name, func):
+    server = None
+    results = bot.db.servers.find({'discord_server': ctx.guild.id})
+    if not results.count():
+        return await ctx.send("No servers added! Add one with s!create")
+    if name == "" and results.count() == 1:
+        server = results[0]
+    else:
+        result = bot.db.servers.find_one({'discord_server': ctx.guild.id, 'name': name})
+        if result:
+            server = result
+        else:
+            return await ctx.send("Invalid server! Please choose one from s!servers")
+    return await func(ctx, server["address"])
 
 
 def setup(bot):
