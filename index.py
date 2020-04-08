@@ -12,28 +12,12 @@ bot.db = MongoClient("mongodb://%s:%s@%s/%s" % (
     quote_plus(os.getenv('MONGO_PASSWORD')),
     os.getenv('MONGO_HOST'),
     os.getenv('MONGO_DATABASE')))[os.getenv('MONGO_DATABASE')]
-cogs = ["cog.basic", 'cog.valve', 'cog.database']
+cogs = ["cog.basic", 'cog.valve', 'cog.database', 'cog.error_handling', 'cog.top']
 
 
 @bot.event
 async def on_ready():
-    print(f'Logged in')
-
-
-@bot.command()
-async def load(extension_name : str):
-    """Loads an extension."""
-    try:
-        bot.load_extension(extension_name)
-    except (AttributeError, ImportError) as e:
-        print(e)
-        return
-
-
-@bot.command()
-async def unload(extension_name : str):
-    """Unloads an extension."""
-    bot.unload_extension(extension_name)
+    print(f'Logged in with '+str(len(bot.guilds))+" guilds")
 
 
 if __name__ == "__main__":
