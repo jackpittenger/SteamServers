@@ -21,6 +21,8 @@ jobs:
         echo "MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }}" >> .env
         echo "MONGO_HOST=${{ secrets.MONGO_HOST }}" >> .env
         echo "MONGO_DATABASE=${{ secrets.MONGO_DATABASE }}" >> .env
+        echo "DEBUG=false" >> .env
+        echo "DBL_TOKEN=${{ secrets.DBL_TOKEN }}" >> .env
     - name: Run server
       run: |
         pm2 restart index.py
