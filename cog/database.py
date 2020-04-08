@@ -15,8 +15,6 @@ class Database(commands.Cog):
             :param name:
             :return:
             """
-
-            # implement regex check
             if bot.db.servers.find({'discord_server': ctx.guild.id}).count() >= 5:
                 return await ctx.send("Max servers reached! Please join the support server to request more servers")
             bot.db.servers.insert_one({'discord_server': ctx.guild.id, 'address': address, 'name': name})
