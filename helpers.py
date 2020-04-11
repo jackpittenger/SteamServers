@@ -3,16 +3,17 @@ import a2s
 import socket
 
 
-async def query_logic(ctx, address):
+async def query_logic(ctx, address, sender=None):
+    sender = sender or ctx.send
     data = address.split(":")
     try:
         info = a2s.info((data[0], int(data[1])))
     except socket.timeout:
-        return await ctx.send("Server timeout! Check the IP:Port")
+        return await sender("Server timeout! Check the IP:Port")
     except socket.gaierror:
-        return await ctx.send("Resolution error! Check the IP:Port")
+        return await sender("Resolution error! Check the IP:Port")
     except IndexError:
-        return await ctx.send("Please format your command like: `s!query 144.12.123.51:27017`")
+        return await sender("Please format your command like: `s!query 144.12.123.51:27017`")
 
     embed = discord.Embed(title="Server information",
                           type='rich')
@@ -24,7 +25,7 @@ async def query_logic(ctx, address):
                                           f' ({info.bot_count} Bot%s)' % ("s" if (info.bot_count != 1)
                                                                           else ""))
     embed.add_field(name="Game", value=info.game)
-    return await ctx.send(embed=embed)
+    return await sender(embed=embed)
 
 
 async def players_logic(ctx, address):

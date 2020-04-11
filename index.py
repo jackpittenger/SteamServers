@@ -13,7 +13,7 @@ bot.db = MongoClient("mongodb://%s:%s@%s/%s" % (
     quote_plus(os.getenv('MONGO_PASSWORD')),
     os.getenv('MONGO_HOST'),
     os.getenv('MONGO_DATABASE')))[os.getenv('MONGO_DATABASE')]
-cogs = ["cog.basic", 'cog.valve', 'cog.database', 'cog.error_handling', 'cog.top', 'cog.help']
+cogs = ["cog.basic", 'cog.valve', 'cog.database', 'cog.error_handling', 'cog.top', 'cog.help', 'cog.automation']
 
 
 @bot.event

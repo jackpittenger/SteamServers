@@ -67,22 +67,26 @@ class Database(commands.Cog):
             """
             return await _check_sever(bot, ctx, name, players_logic)
 
-
-async def _check_sever(bot, ctx, name, func):
+async def get_server(bot, ctx, name):
     server = None
     results = bot.db.servers.find({'discord_server': ctx.guild.id})
     if not results.count():
-        return await ctx.send("No servers added! Add one with s!create")
-    if name == "" and results.count() == 1:
+        await ctx.send("No servers added! Add one with s!create")
+    elif name == "" and results.count() == 1:
         server = results[0]
     else:
         result = bot.db.servers.find_one({'discord_server': ctx.guild.id, 'name': name})
         if result:
             server = result
         else:
-            return await ctx.send("Invalid server! Please choose one from s!servers")
-    return await func(ctx, server["address"])
+            await ctx.send("Invalid server! Please choose one from s!servers")
+    return server
 
+async def _check_sever(bot, ctx, name, func):
+    server = await get_server(bot, ctx, name)
+    if server:
+        return await func(ctx, server["address"])
+    return None
 
 def setup(bot):
     bot.add_cog(Database(bot))
