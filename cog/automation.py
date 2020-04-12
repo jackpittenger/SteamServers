@@ -18,7 +18,7 @@ class Automation(commands.Cog):
             s!autostatus name minutes
             s!autostatus myServer 45
             """
-            if minutes < 1 or minutes > 1440:
+            if minutes < 30 or minutes > 1440:
                 return await ctx.send('Minutes should be greater than 30 and less than 1440!')
             await create_status_timer(bot, ctx, name, minutes * 60)
 
