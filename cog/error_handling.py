@@ -17,7 +17,7 @@ class CommandErrorHandler(commands.Cog):
         if hasattr(ctx.command, 'on_error'):
             return
 
-        ignored = (commands.CommandNotFound, commands.UserInputError)
+        ignored = commands.CommandNotFound
         error = getattr(error, 'original', error)
 
         if isinstance(error, ignored):
@@ -36,6 +36,8 @@ class CommandErrorHandler(commands.Cog):
             if ctx.command.qualified_name == 'tag list':
                 return await ctx.send('I could not find that member. Please try again.')
 
+        elif isinstance(error, commands.MissingRequiredArgument):
+            return await ctx.send(error)
         print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
         traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
