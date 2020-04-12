@@ -21,6 +21,7 @@ class Automation(commands.Cog):
             if minutes < 30 or minutes > 1440:
                 return await ctx.send('Minutes should be greater than 30 and less than 1440!')
             await create_status_timer(bot, ctx, name, minutes * 60)
+            await ctx.send('Auto status successfully added to server \'%s\'' % name)
 
         @bot.command()
         @commands.has_permissions(manage_guild=True)
