@@ -35,4 +35,3 @@ if __name__ == "__main__":
         bot.loop.run_until_complete(bot.logout())
     finally:
         bot.loop.close()
-

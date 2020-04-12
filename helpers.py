@@ -3,7 +3,7 @@ import a2s
 import socket
 
 
-async def query_logic(ctx, address, sender=None):
+async def query_logic(ctx, address, sender=None, name=None, bot=None, guild=None):
     sender = sender or ctx.send
     data = address.split(":")
     try:
@@ -14,7 +14,12 @@ async def query_logic(ctx, address, sender=None):
         return await sender("Resolution error! Check the IP:Port")
     except IndexError:
         return await sender("Please format your command like: `s!query 144.12.123.51:27017`")
-
+    if guild is not None:
+        print("test")
+        last_amount = check_last_amount(bot, guild, name)
+        if "last" in last_amount and last_amount["last"] == info.player_count:
+            return
+        set_last_amount(bot, guild, name, info.player_count)
     embed = discord.Embed(title="Server information",
                           type='rich')
     embed.add_field(name="Address", value=address + "%s%s" % ((" 🛡" if info.vac_enabled else ""),
@@ -58,3 +63,14 @@ async def players_logic(ctx, address):
         output += player.name[0:max_name_length] + " "*(max_name_length-len(player.name))+"|"+player.duration+"\n"
 
     return await ctx.send(output+"```")
+
+
+def check_last_amount(bot, guild, name):
+    return bot.db.servers.find_one({'discord_server': guild, 'name': name})['timer']
+
+
+def set_last_amount(bot, guild, name, amount):
+    return bot.db.servers.update_one(
+        {'discord_server': guild, 'name': name},
+        {"$set": {'timer.last': amount}}
+    )
