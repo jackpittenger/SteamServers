@@ -54,7 +54,6 @@ async def create_status_timer(bot, ctx, name, seconds):
 def _initialize_timers(bot):
     results = bot.db.servers.find({'timer': {'$exists': True}})
     for server in results:
-        print(server)
         _start_timer(bot, server["timer"]["channel"], server["address"], server["timer"]["interval"], server['name'],
                      server["discord_server"])
 
@@ -71,6 +70,9 @@ def _start_timer(bot, channel_id, server_address, seconds, name, d_id):
             asyncio.run_coroutine_threadsafe(query_logic(None, server_address, sender, name, bot, d_id), bot.loop)
         finally:
             _start_timer(bot, channel_id, server_address, seconds, name, d_id)
+
+    # Run on bot startup
+    asyncio.run_coroutine_threadsafe(query_logic(None, server_address, sender, name, bot, d_id), bot.loop)
 
     timer = Timer(seconds, wrapper)
     timers[str(d_id)+name] = timer
