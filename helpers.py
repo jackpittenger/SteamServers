@@ -3,17 +3,23 @@ import a2s
 import socket
 
 
-async def query_logic(ctx, address):
+async def query_logic(ctx, address, sender=None, name=None, bot=None, guild=None):
+    sender = sender or ctx.send
     data = address.split(":")
     try:
         info = a2s.info((data[0], int(data[1])))
     except socket.timeout:
-        return await ctx.send("Server timeout! Check the IP:Port")
+        return await sender("Server timeout! Check the IP:Port")
     except socket.gaierror:
-        return await ctx.send("Resolution error! Check the IP:Port")
+        return await sender("Resolution error! Check the IP:Port")
     except IndexError:
-        return await ctx.send("Please format your command like: `s!query 144.12.123.51:27017`")
-
+        return await sender("Please format your command like: `s!query 144.12.123.51:27017`")
+    if guild is not None:
+        print("test")
+        last_amount = check_last_amount(bot, guild, name)
+        if "last" in last_amount and last_amount["last"] == info.player_count:
+            return
+        set_last_amount(bot, guild, name, info.player_count)
     embed = discord.Embed(title="Server information",
                           type='rich')
     embed.add_field(name="Address", value=address + "%s%s" % ((" 🛡" if info.vac_enabled else ""),
@@ -24,7 +30,7 @@ async def query_logic(ctx, address):
                                           f' ({info.bot_count} Bot%s)' % ("s" if (info.bot_count != 1)
                                                                           else ""))
     embed.add_field(name="Game", value=info.game)
-    return await ctx.send(embed=embed)
+    return await sender(embed=embed)
 
 
 async def players_logic(ctx, address):
@@ -57,3 +63,14 @@ async def players_logic(ctx, address):
         output += player.name[0:max_name_length] + " "*(max_name_length-len(player.name))+"|"+player.duration+"\n"
 
     return await ctx.send(output+"```")
+
+
+def check_last_amount(bot, guild, name):
+    return bot.db.servers.find_one({'discord_server': guild, 'name': name})['timer']
+
+
+def set_last_amount(bot, guild, name, amount):
+    return bot.db.servers.update_one(
+        {'discord_server': guild, 'name': name},
+        {"$set": {'timer.last': amount}}
+    )
