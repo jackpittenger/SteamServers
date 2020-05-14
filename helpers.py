@@ -1,6 +1,7 @@
 import discord
 import a2s
 import socket
+import requests
 
 
 async def query_logic(ctx, address, sender=None, name=None, bot=None, guild=None):
@@ -43,6 +44,9 @@ async def players_logic(ctx, address):
         return await ctx.send("Resolution error! Check the IP:Port")
     except IndexError:
         return await ctx.send("Please format your command like: `s!query 144.12.123.51:27017`")
+    except a2s.BufferExhaustedError as e:
+        return await ctx.send("Buffer exhausted! Please confirm that the server has the following configuration"
+                              ":\n```host_name_store 1\nhost_info_show 1\nhost_players_show 2```")
 
     if not info or len(info) == 0:
         return await ctx.send("Server is empty!")
@@ -61,7 +65,6 @@ async def players_logic(ctx, address):
     output += "¯"*(max_name_length+11)+"\n"
     for player in info:
         output += player.name[0:max_name_length] + " "*(max_name_length-len(player.name))+"|"+player.duration+"\n"
-
     return await ctx.send(output+"```")
 
 
