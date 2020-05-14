@@ -61,11 +61,18 @@ async def players_logic(ctx, address):
 
     max_name_length = len(max([d.name for d in info], key=len))
     max_name_length = max_name_length if max_name_length <= 16 else 16
-    output = "```Name"+" "*(max_name_length-4)+"|Duration\n"
+    output = "Name"+" "*(max_name_length-4)+"|Duration\n"
     output += "¯"*(max_name_length+11)+"\n"
     for player in info:
         output += player.name[0:max_name_length] + " "*(max_name_length-len(player.name))+"|"+player.duration+"\n"
-    return await ctx.send(output+"```")
+    if len(output) > 1900:
+        r = requests.post("https://www.hastepaste.com/api/create", data={"text": output, "raw": "false"})
+        if r.status_code == 200:
+            return await ctx.send("Too many players for discord! See the players here: "+r.text)
+        else:
+            return await ctx.send("Your server has too many players to post in Discord, but our HastePaste request "
+                                  "failed. Please try again later, or contact support.")
+    return await ctx.send("```"+output+"```")
 
 
 def check_last_amount(bot, guild, name):
