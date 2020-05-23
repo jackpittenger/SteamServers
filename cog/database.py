@@ -14,7 +14,8 @@ class Database(commands.Cog):
             s!create 144.12.123.51:27017 ToasterRP
             """
             if bot.db.servers.find({'discord_server': ctx.guild.id}).count() >= 5 and\
-                    ctx.guild.id != 353751307460542476:
+                    (bot.db.exempt.find({'server': ctx.guild.id}).count() == 0 or
+                     bot.db.servers.find({'discord_server': ctx.guild.id}).count() >= 35):
                 return await ctx.send("Max servers reached! Please join the support server to request more servers")
             bot.db.servers.insert_one({'discord_server': ctx.guild.id, 'address': address, 'name': name})
             return await ctx.send(f'Added `{address}` as `{name}`')
