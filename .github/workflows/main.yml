@@ -9,6 +9,11 @@ jobs:
     runs-on: self-hosted
 
     steps:
+    - name: "Free pycache"
+      run: |
+        sudo chmod -R ugo+rwX __pycache__/
+        cd cog/
+        sudo chmod -R ugo+rwX __pycache__/
     - uses: actions/checkout@v2
 
     - name: Install packages
