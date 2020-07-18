@@ -16,7 +16,6 @@ async def query_logic(ctx, address, sender=None, name=None, bot=None, guild=None
     except IndexError:
         return await sender("Please format your command like: `s!query 144.12.123.51:27017`")
     if guild is not None:
-        print("here")
         last_amount = check_last_amount(bot, guild, name)
         if "last" in last_amount and last_amount["last"] == info.player_count:
             return
