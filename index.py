@@ -5,8 +5,22 @@ from pymongo import MongoClient
 from urllib.parse import quote_plus
 from discord.ext import commands
 load_dotenv()
+default_prefix = 's!'
 
-bot = commands.Bot(command_prefix="s!", description="Thank you for using Steam Servers! Here are my commands:")
+
+async def determine_prefix(bot, message):
+    if message.guild is None:
+        return default_prefix
+    try:
+        prefix = bot.db.servers.find_one({'discord_server': message.guild.id}, {'prefix': 1, '_id': 0})
+        if len(prefix) != 0:
+            return prefix['prefix']
+        return default_prefix
+    except:
+        return default_prefix
+
+
+bot = commands.Bot(command_prefix=determine_prefix,description="Thank you for using Steam Servers! Here are my commands:")
 bot.loop = asyncio.get_event_loop()
 bot.remove_command("help")
 bot.db = MongoClient("mongodb://%s:%s@%s/%s" % (
@@ -34,3 +48,4 @@ if __name__ == "__main__":
         bot.loop.run_until_complete(bot.logout())
     finally:
         bot.loop.close()
+

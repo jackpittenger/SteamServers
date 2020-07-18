@@ -69,6 +69,21 @@ class Database(commands.Cog):
             """
             return await _check_sever(bot, ctx, name, players_logic)
 
+        @bot.command()
+        @commands.has_permissions(manage_guild=True)
+        async def prefix(ctx, prefix):
+            """
+            Set a custom prefix (1-5 characters). Default s!
+
+            s!prefix prefix
+            s!prefix ?
+            s!prefix !
+            """
+            if len(prefix) < 1 or len(prefix) > 5:
+                return await ctx.send("Prefix must be between 1-5 characters")
+            bot.db.servers.update_one({'discord_server': ctx.guild.id}, {'$set': {'prefix': prefix}})
+            return await ctx.send(f"Prefix set to `{prefix}`")
+
 async def get_server(bot, ctx, name):
     server = None
     results = bot.db.servers.find({'discord_server': ctx.guild.id})
