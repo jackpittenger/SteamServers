@@ -21,7 +21,6 @@ cogs = ["cog.basic", 'cog.valve', 'cog.database', 'cog.error_handling', 'cog.top
 async def on_ready():
     print(f'Logged in with '+str(len(bot.guilds))+" guilds")
 
-
 if __name__ == "__main__":
     for extension in cogs:
         try:

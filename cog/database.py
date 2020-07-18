@@ -1,4 +1,5 @@
 import discord
+import re
 from discord.ext import commands
 from helpers import query_logic, players_logic
 
@@ -76,7 +77,7 @@ async def get_server(bot, ctx, name):
     elif name == "" and results.count() == 1:
         server = results[0]
     else:
-        result = bot.db.servers.find_one({'discord_server': ctx.guild.id, 'name': name})
+        result = bot.db.servers.find_one({'discord_server': ctx.guild.id, 'name': { '$regex': re.compile('^'+name+'$', re.IGNORECASE) }})
         if result:
             server = result
         else:
