@@ -21,6 +21,8 @@ async def determine_prefix(bot, message):
 
 
 bot = commands.Bot(command_prefix=determine_prefix,description="Thank you for using Steam Servers! Here are my commands:")
+bot.guild_subscriptions = False
+bot.max_messages = 0
 bot.loop = asyncio.get_event_loop()
 bot.remove_command("help")
 bot.db = MongoClient("mongodb://%s:%s@%s/%s" % (
