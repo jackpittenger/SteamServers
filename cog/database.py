@@ -57,7 +57,7 @@ class Database(commands.Cog):
             s!status name
             s!status ToasterRP
             """
-            return await _check_sever(bot, ctx, name, query_logic)
+            return await _check_server(bot, ctx, name, query_logic)
 
         @bot.command()
         async def players(ctx, *, name=""):
@@ -67,7 +67,7 @@ class Database(commands.Cog):
             s!players name
             s!players ToasterRP
             """
-            return await _check_sever(bot, ctx, name, players_logic)
+            return await _check_server(bot, ctx, name, players_logic)
 
         @bot.command()
         @commands.has_permissions(manage_guild=True)
@@ -99,7 +99,7 @@ async def get_server(bot, ctx, name):
             await ctx.send("Invalid server! Please choose one from s!servers")
     return server
 
-async def _check_sever(bot, ctx, name, func):
+async def _check_server(bot, ctx, name, func):
     server = await get_server(bot, ctx, name)
     if server:
         return await func(ctx, server["address"])
