@@ -4,7 +4,7 @@ import socket
 import requests
 
 
-async def query_logic(ctx, address, sender=None, name=None, bot=None, guild=None):
+async def query_logic(ctx, address, bot, sender=None, name=None, guild=None):
     sender = sender or ctx.send
     data = address.split(":")
     try:
@@ -14,7 +14,7 @@ async def query_logic(ctx, address, sender=None, name=None, bot=None, guild=None
     except socket.gaierror:
         return await sender("Resolution error! Check the IP:Port")
     except IndexError:
-        return await sender("Please format your command like: `s!query 144.12.123.51:27017`")
+        return await sender("Please format your command like: `"+get_prefix(bot, ctx.guild.id)+"query 144.12.123.51:27017`")
     if guild is not None:
         last_amount = check_last_amount(bot, guild, name)
         if "last" in last_amount and last_amount["last"] == info.player_count:
@@ -33,7 +33,7 @@ async def query_logic(ctx, address, sender=None, name=None, bot=None, guild=None
     return await sender(embed=embed)
 
 
-async def players_logic(ctx, address):
+async def players_logic(ctx, address, bot):
     data = address.split(":")
     try:
         info = a2s.players((data[0], int(data[1])))
@@ -42,7 +42,7 @@ async def players_logic(ctx, address):
     except socket.gaierror:
         return await ctx.send("Resolution error! Check the IP:Port")
     except IndexError:
-        return await ctx.send("Please format your command like: `s!query 144.12.123.51:27017`")
+        return await ctx.send("Please format your command like: `"+get_prefix(bot, ctx.guild.id)+"pquery 144.12.123.51:27017`")
     except a2s.BufferExhaustedError as e:
         return await ctx.send("Buffer exhausted! Please confirm that the server has the following configuration"
                               ":\n```host_name_store 1\nhost_info_show 1\nhost_players_show 2```")
@@ -83,3 +83,10 @@ def set_last_amount(bot, guild, name, amount):
         {'discord_server': guild, 'name': name},
         {"$set": {'timer.last': amount}}
     )
+
+def get_prefix(bot, guild_id):
+    prefix = bot.db.servers.find_one({'discord_server': guild_id}, {'prefix': 1, '_id': 0})
+    if len(prefix) != 0:
+        return prefix["prefix"]
+    return bot.default_prefix
+

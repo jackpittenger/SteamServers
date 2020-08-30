@@ -1,7 +1,7 @@
 import discord
 import re
 from discord.ext import commands
-from helpers import query_logic, players_logic
+from helpers import query_logic, players_logic, get_prefix
 
 
 class Database(commands.Cog):
@@ -29,7 +29,7 @@ class Database(commands.Cog):
             """
             results = bot.db.servers.find({'discord_server': ctx.guild.id})
             if not results.count():
-                return await ctx.send("No servers added! Add one with s!create")
+                return await ctx.send("No servers added! Add one with "+get_prefix(bot, ctx.guild.id)+"create")
             embed = discord.Embed(title="Server list",
                                   type='rich')
             for result in results:
@@ -88,7 +88,7 @@ async def get_server(bot, ctx, name):
     server = None
     results = bot.db.servers.find({'discord_server': ctx.guild.id})
     if not results.count():
-        await ctx.send("No servers added! Add one with s!create")
+        await ctx.send("No servers added! Add one with "+get_prefix(bot, ctx.guild.id)+"create")
     elif name == "" and results.count() == 1:
         server = results[0]
     else:
@@ -96,13 +96,13 @@ async def get_server(bot, ctx, name):
         if result:
             server = result
         else:
-            await ctx.send("Invalid server! Please choose one from s!servers")
+            await ctx.send("Invalid server! Please choose one from "+get_prefix(bot, ctx.guild.id)+"servers")
     return server
 
 async def _check_server(bot, ctx, name, func):
     server = await get_server(bot, ctx, name)
     if server:
-        return await func(ctx, server["address"])
+        return await func(ctx, server["address"], bot)
     return None
 
 def setup(bot):

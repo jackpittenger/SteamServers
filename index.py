@@ -4,6 +4,7 @@ import asyncio
 from pymongo import MongoClient
 from urllib.parse import quote_plus
 from discord.ext import commands
+from helpers import get_prefix
 load_dotenv()
 default_prefix = 's!'
 
@@ -12,10 +13,7 @@ async def determine_prefix(bot, message):
     if message.guild is None:
         return default_prefix
     try:
-        prefix = bot.db.servers.find_one({'discord_server': message.guild.id}, {'prefix': 1, '_id': 0})
-        if len(prefix) != 0:
-            return prefix['prefix']
-        return default_prefix
+        return get_prefix(bot, message.guild.id)
     except:
         return default_prefix
 
@@ -30,6 +28,7 @@ bot.db = MongoClient("mongodb://%s:%s@%s/%s" % (
     quote_plus(os.getenv('MONGO_PASSWORD')),
     os.getenv('MONGO_HOST'),
     os.getenv('MONGO_DATABASE')))[os.getenv('MONGO_DATABASE')]
+bot.default_prefix = default_prefix
 cogs = ["cog.basic", 'cog.valve', 'cog.database', 'cog.error_handling', 'cog.top', 'cog.help', 'cog.automation']
 
 
