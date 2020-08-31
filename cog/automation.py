@@ -71,7 +71,7 @@ class Threaded(Thread):
                 if channel:
                     await channel.send(*args, **kwargs)
         
-            await query_logic(None, server["address"], sender, server["name"], bot, server["discord_server"]) 
+            await query_logic(None, server["address"], bot, sender, server["name"], server["discord_server"]) 
 
 
 def setup(bot):
