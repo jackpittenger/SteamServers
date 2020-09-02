@@ -86,7 +86,7 @@ def set_last_amount(bot, guild, name, amount):
 
 def get_prefix(bot, guild_id):
     prefix = bot.db.servers.find_one({'discord_server': guild_id}, {'prefix': 1, '_id': 0})
-    if len(prefix) != 0:
+    if prefix is not None and len(prefix) != 0:
         return prefix["prefix"]
     return bot.default_prefix
 
