@@ -55,7 +55,7 @@ class Threaded(Thread):
         self.start()
     
     def run(self):
-        time.sleep(10) # Temporary way to let the bot boot up - should probably come up with a better way
+        time.sleep(35) # Temporary way to let the bot boot up - should probably come up with a better way
         while True:
             asyncio.run_coroutine_threadsafe(self.server_fetch(self.bot), self.bot.loop)
             time.sleep(60)
@@ -63,15 +63,14 @@ class Threaded(Thread):
     async def server_fetch(self, bot):
         results = bot.db.servers.find({'timer': {'$exists': True}})
         time_now = math.floor((datetime.datetime.utcnow() - datetime.datetime(1970, 1, 1)).total_seconds() / 60)
-        for server in results:
-            if start_minutes-time_now != 0 and (time_now - start_minutes) % (server["timer"]["interval"] / 60) != 0:
-                continue
+        servers = [server for server in results if start_minutes-time_now == -1 or (time_now - start_minutes) % (server["timer"]["interval"] / 60) == 0]
+        for server in servers:
             async def sender(*args, **kwargs):
                 channel = self.bot.get_channel(server["timer"]["channel"])
                 if channel:
                     await channel.send(*args, **kwargs)
         
-            await query_logic(None, server["address"], bot, sender, server["name"], server["discord_server"]) 
+            await query_logic(None, server["address"], bot, sender, server["name"], server["discord_server"])
 
 
 def setup(bot):

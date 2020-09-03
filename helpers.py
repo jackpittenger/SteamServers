@@ -14,7 +14,11 @@ async def query_logic(ctx, address, bot, sender=None, name=None, guild=None):
     except socket.gaierror:
         return await sender("Resolution error! Check the IP:Port")
     except IndexError:
-        return await sender("Please format your command like: `"+get_prefix(bot, ctx.guild.id)+"query 144.12.123.51:27017`")
+        if guild is not None:
+            return await sender("Please format your command like: `"+get_prefix(bot, guild.id)+"query 144.12.123.51:27017`")
+        return
+    except Exception as e:
+        return await sender("Unknown error! Check the command, and contact support if this continues.")
     if guild is not None:
         last_amount = check_last_amount(bot, guild, name)
         if "last" in last_amount and last_amount["last"] == info.player_count:
