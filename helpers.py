@@ -2,7 +2,7 @@ import discord
 import a2s
 import socket
 import requests
-
+from beautifultable import BeautifulTable
 
 async def query_logic(ctx, address, bot, sender=None, name=None, guild=None):
     sender = sender or ctx.send
@@ -62,20 +62,23 @@ async def players_logic(ctx, address, bot):
         seconds %= 60
         d.duration = "%d:%02d:%02d" % (hour, minutes, seconds)
 
-    max_name_length = len(max([d.name for d in info], key=len))
-    max_name_length = max_name_length if max_name_length <= 16 else 16
-    output = "Name"+" "*(max_name_length-4)+"|Duration\n"
-    output += "¯"*(max_name_length+11)+"\n"
+    table = BeautifulTable()
+    table.set_style(BeautifulTable.STYLE_BOX)
     for player in info:
-        output += player.name[0:max_name_length] + " "*(max_name_length-len(player.name))+"|"+player.duration+"\n"
-    if len(output) > 1900:
-        r = requests.post("https://www.hastepaste.com/api/create", data={"text": output, "raw": "false"})
+        name = player.name[0:24]
+        if name == "":
+            name="Connecting..."     
+        table.rows.append([name, player.duration, player.score])
+    table.columns.header = ["Name", "Duration", "Score"]
+    
+    if len(str(table)) > 1900:
+        r = requests.post("https://www.hastepaste.com/api/create", data={"text": str(table), "raw": "false"})
         if r.status_code == 200:
             return await ctx.send("Too many players for discord! See the players here: "+r.text)
         else:
             return await ctx.send("Your server has too many players to post in Discord, but our HastePaste request "
                                   "failed. Please try again later, or contact support.")
-    return await ctx.send("```"+output+"```")
+    return await ctx.send("```r\n"+str(table)+"```")
 
 
 def check_last_amount(bot, guild, name):

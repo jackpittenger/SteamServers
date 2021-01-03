@@ -4,3 +4,4 @@ discord
 python-a2s
 dblpy
 requests
+beautifultable
