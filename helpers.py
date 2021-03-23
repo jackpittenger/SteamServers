@@ -33,7 +33,7 @@ async def query_logic(ctx, address, bot, sender=None, name=None, guild=None):
     embed.add_field(name="Players", value=f'{info.player_count}/{info.max_players}%s' %
                                           f' ({info.bot_count} Bot%s)' % ("s" if (info.bot_count != 1)
                                                                           else ""))
-    embed.add_field(name="Game", value=info.game)
+    embed.add_field(name="Game", value=info.game or "Unknown")
     return await sender(embed=embed)
 
 
