@@ -46,7 +46,7 @@ if __name__ == "__main__":
     try:
         bot.loop.run_until_complete(bot.start(os.getenv("TOKEN")))
     except KeyboardInterrupt:
-        bot.loop.run_until_complete(bot.logout())
+        bot.loop.run_until_complete(bot.close())
     finally:
         bot.loop.close()
 

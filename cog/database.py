@@ -14,9 +14,9 @@ class Database(commands.Cog):
             s!create x.x.x.x:27017 Name
             s!create 144.12.123.51:27017 ToasterRP
             """
-            if bot.db.servers.find({'discord_server': ctx.guild.id}).count() >= 5 and\
-                    (bot.db.exempt.find({'server': ctx.guild.id}).count() == 0 or
-                     bot.db.servers.find({'discord_server': ctx.guild.id}).count() >= 35):
+            if bot.db.servers.count_documents({'discord_server': ctx.guild.id}) >= 5 and\
+                    (bot.db.exempt.count_documents({'server': ctx.guild.id}) == 0 or
+                     bot.db.servers.count_documents({'discord_server': ctx.guild.id}) >= 35):
                 return await ctx.send("Max servers reached! Please join the support server to request more servers")
             bot.db.servers.insert_one({'discord_server': ctx.guild.id, 'address': address, 'name': name})
             return await ctx.send(f'Added `{address}` as `{name}`')
@@ -28,12 +28,14 @@ class Database(commands.Cog):
             s!servers
             """
             results = bot.db.servers.find({'discord_server': ctx.guild.id})
-            if not results.count():
-                return await ctx.send("No servers added! Add one with "+get_prefix(bot, ctx.guild.id)+"create")
+            hasResult = False
             embed = discord.Embed(title="Server list",
                                   type='rich')
             for result in results:
                 embed.add_field(name=result['name'], value=result['address'])
+                hasResult = True
+            if not hasResult: 
+                return await ctx.send("No servers added! Add one with "+get_prefix(bot, ctx.guild.id)+"create")
             return await ctx.send(embed=embed)
 
         @bot.command()
@@ -87,9 +89,10 @@ class Database(commands.Cog):
 async def get_server(bot, ctx, name):
     server = None
     results = bot.db.servers.find({'discord_server': ctx.guild.id})
-    if not results.count():
+    cnt = bot.db.servers.count_documents({'discord_server': ctx.guild.id})
+    if not cnt:
         await ctx.send("No servers added! Add one with "+get_prefix(bot, ctx.guild.id)+"create")
-    elif name == "" and results.count() == 1:
+    elif name == "" and cnt == 1:
         server = results[0]
     else:
         result = bot.db.servers.find_one({'discord_server': ctx.guild.id, 'name': { '$regex': re.compile('^'+name+'$', re.IGNORECASE) }})
