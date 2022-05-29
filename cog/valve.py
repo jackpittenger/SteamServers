@@ -1,35 +1,29 @@
 from discord.ext import commands
-from helpers import query_logic, players_logic 
+import discord
+from discord import app_commands
+from helpers import query_server_for_summary  
 
 
 class Valve(commands.Cog):
     def __init__(self, bot):
-        @bot.command()
-        async def query(ctx, address):
-            """
-            Queries a server
-            s!query x.x.x.x:PORT
-            s!query 144.12.123.51:27017
-            """
-            return await query_logic(ctx, address, bot)
-
-        @bot.command()
-        async def pquery(ctx, address):
-            """
-            Lists players on a server
-            s!pquery x.x.x.x:PORT
-            s!pquery 144.12.123.51:27017
-            """
-            return await players_logic(ctx, address, bot)
-
-        @query.error
-        @pquery.error
-        async def do_repeat_handler(ctx, error):
-            if isinstance(error, commands.MissingRequiredArgument):
-                if error.param.name == 'address':
-                    print(ctx)
-                    await ctx.send("Please format your command like: `/command 144.12.123.51:27017`")
+        self.bot = bot;
+        
+    @app_commands.command(name="query")
+    @app_commands.describe(
+            server_address="The IP:Port to query. For example, 144.12.123.51:27017"
+    )
+    @app_commands.guilds(discord.Object(441425708896747532))
+    async def query(self, interaction: discord.Interaction, server_address: str):
+        """
+        Queries a server
+        """
+        await interaction.response.defer()
+        summary = await query_server_for_summary(server_address)
+        if type(summary) is str:
+            await interaction.followup.send(content=summary)
+        else:
+            await interaction.followup.send(embed=summary)
 
 
-def setup(bot):
-    bot.add_cog(Valve(bot))
+async def setup(bot: commands.Bot) -> None:
+    await bot.add_cog(Valve(bot))

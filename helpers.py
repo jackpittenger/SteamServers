@@ -4,26 +4,19 @@ import socket
 import requests
 from beautifultable import BeautifulTable
 
-async def query_logic(ctx, address, bot, sender=None, name=None, guild=None):
-    sender = sender or ctx.send
+async def query_server_for_summary(address: str):
     data = address.split(":")
     try:
         info = a2s.info((data[0], int(data[1])))
     except socket.timeout:
-        return await sender("Server timeout! Check the IP:Port")
+        return "Server timeout! Check the IP:Port"
     except socket.gaierror:
-        return await sender("Resolution error! Check the IP:Port")
+        return "Resolution error! Check the IP:Port"
     except IndexError:
-        if guild is not None:
-            return await sender("Please format your command like: `/query 144.12.123.51:27017`")
-        return
+        return "Please format your command like: `/query 144.12.123.51:27017`"
     except Exception as e:
-        return await sender("Unknown error! Check the command, and contact support if this continues.")
-    if guild is not None:
-        last_amount = check_last_amount(bot, guild, name)
-        if "last" in last_amount and last_amount["last"] == info.player_count:
-            return
-        set_last_amount(bot, guild, name, info.player_count)
+        return "Unknown error! Check the command, and contact support if this continues."
+    
     embed = discord.Embed(title="Server information",
                           type='rich')
     embed.add_field(name="Address", value=address + "%s%s" % ((" 🛡" if info.vac_enabled else ""),
@@ -34,7 +27,7 @@ async def query_logic(ctx, address, bot, sender=None, name=None, guild=None):
                                           f' ({info.bot_count} Bot%s)' % ("s" if (info.bot_count != 1)
                                                                           else ""))
     embed.add_field(name="Game", value=info.game or "Unknown")
-    return await sender(embed=embed)
+    return embed
 
 
 async def players_logic(ctx, address, bot):
