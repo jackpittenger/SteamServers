@@ -1,5 +1,5 @@
 from discord.ext import commands
-from helpers import query_logic, players_logic, get_prefix
+from helpers import query_logic, players_logic 
 
 
 class Valve(commands.Cog):
@@ -28,7 +28,7 @@ class Valve(commands.Cog):
             if isinstance(error, commands.MissingRequiredArgument):
                 if error.param.name == 'address':
                     print(ctx)
-                    await ctx.send("Please format your command like: `"+get_prefix(bot, ctx.guild.id)+"command 144.12.123.51:27017`")
+                    await ctx.send("Please format your command like: `/command 144.12.123.51:27017`")
 
 
 def setup(bot):

@@ -1,7 +1,7 @@
 import discord
 import re
 from discord.ext import commands
-from helpers import query_logic, players_logic, get_prefix
+from helpers import query_logic, players_logic 
 
 
 class Database(commands.Cog):
@@ -35,7 +35,7 @@ class Database(commands.Cog):
                 embed.add_field(name=result['name'], value=result['address'])
                 hasResult = True
             if not hasResult: 
-                return await ctx.send("No servers added! Add one with "+get_prefix(bot, ctx.guild.id)+"create")
+                return await ctx.send("No servers added! Add one with `/create`")
             return await ctx.send(embed=embed)
 
         @bot.command()
@@ -91,7 +91,7 @@ async def get_server(bot, ctx, name):
     results = bot.db.servers.find({'discord_server': ctx.guild.id})
     cnt = bot.db.servers.count_documents({'discord_server': ctx.guild.id})
     if not cnt:
-        await ctx.send("No servers added! Add one with "+get_prefix(bot, ctx.guild.id)+"create")
+        await ctx.send("No servers added! Add one with `/create`")
     elif name == "" and cnt == 1:
         server = results[0]
     else:
@@ -99,7 +99,7 @@ async def get_server(bot, ctx, name):
         if result:
             server = result
         else:
-            await ctx.send("Invalid server! Please choose one from "+get_prefix(bot, ctx.guild.id)+"servers")
+            await ctx.send("Invalid server! Please choose one from `/servers`")
     return server
 
 async def _check_server(bot, ctx, name, func):

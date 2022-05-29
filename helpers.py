@@ -15,7 +15,7 @@ async def query_logic(ctx, address, bot, sender=None, name=None, guild=None):
         return await sender("Resolution error! Check the IP:Port")
     except IndexError:
         if guild is not None:
-            return await sender("Please format your command like: `"+get_prefix(bot, guild.id)+"query 144.12.123.51:27017`")
+            return await sender("Please format your command like: `/query 144.12.123.51:27017`")
         return
     except Exception as e:
         return await sender("Unknown error! Check the command, and contact support if this continues.")
@@ -46,7 +46,7 @@ async def players_logic(ctx, address, bot):
     except socket.gaierror:
         return await ctx.send("Resolution error! Check the IP:Port")
     except IndexError:
-        return await ctx.send("Please format your command like: `"+get_prefix(bot, ctx.guild.id)+"pquery 144.12.123.51:27017`")
+        return await ctx.send("Please format your command like: `/pquery 144.12.123.51:27017`")
     except a2s.BufferExhaustedError as e:
         return await ctx.send("Buffer exhausted! Please confirm that the server has the following configuration"
                               ":\n```host_name_store 1\nhost_info_show 1\nhost_players_show 2```")
@@ -90,10 +90,3 @@ def set_last_amount(bot, guild, name, amount):
         {'discord_server': guild, 'name': name},
         {"$set": {'timer.last': amount}}
     )
-
-def get_prefix(bot, guild_id):
-    prefix = bot.db.servers.find_one({'discord_server': guild_id}, {'prefix': 1, '_id': 0})
-    if prefix is not None and len(prefix) != 0:
-        return prefix["prefix"]
-    return bot.default_prefix
-
