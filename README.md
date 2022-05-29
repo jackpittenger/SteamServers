@@ -27,5 +27,7 @@ This includes publicly attributing it in your Discord bot.
 ## Contributors
 
 <b>realSaddy</b> - Project Lead
+
 <b>Ceifa</b> - Contributor
+
 <b>Benjaminimal</b> - Contributor
