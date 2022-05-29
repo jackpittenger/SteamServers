@@ -30,22 +30,21 @@ async def query_server_for_summary(address: str):
     return embed
 
 
-async def players_logic(ctx, address, bot):
+async def query_server_for_players(address: str):
     data = address.split(":")
     try:
         info = a2s.players((data[0], int(data[1])))
     except socket.timeout:
-        return await ctx.send("Server timeout! Check the IP:Port")
+        return "Server timeout! Check the IP:Port"
     except socket.gaierror:
-        return await ctx.send("Resolution error! Check the IP:Port")
+        return "Resolution error! Check the IP:Port"
     except IndexError:
-        return await ctx.send("Please format your command like: `/pquery 144.12.123.51:27017`")
+        return "Please format your command like: `/pquery 144.12.123.51:27017`"
     except a2s.BufferExhaustedError as e:
-        return await ctx.send("Buffer exhausted! Please confirm that the server has the following configuration"
-                              ":\n```host_name_store 1\nhost_info_show 1\nhost_players_show 2```")
+        return "Buffer exhausted! Please confirm that the server has the following configuration:\n```host_name_store 1\nhost_info_show 1\nhost_players_show 2```"
 
     if not info or len(info) == 0:
-        return await ctx.send("Server is empty!")
+        return "Server is empty!"
 
     for d in info:
         seconds = d.duration % (24 * 3600)
@@ -58,7 +57,7 @@ async def players_logic(ctx, address, bot):
     table = BeautifulTable()
     table.set_style(BeautifulTable.STYLE_BOX)
     for player in info:
-        name = player.name[0:24]
+        name = player.name[0:24].encode("ascii", "ignore").decode()
         if name == "":
             name="Connecting..."     
         table.rows.append([name, player.duration, player.score])
@@ -67,11 +66,10 @@ async def players_logic(ctx, address, bot):
     if len(str(table)) > 1900:
         r = requests.post("https://www.hastepaste.com/api/create", data={"text": str(table), "raw": "false"})
         if r.status_code == 200:
-            return await ctx.send("Too many players for discord! See the players here: "+r.text)
+            return "Too many players for discord! See the players here: "+r.text
         else:
-            return await ctx.send("Your server has too many players to post in Discord, but our HastePaste request "
-                                  "failed. Please try again later, or contact support.")
-    return await ctx.send("```r\n"+str(table)+"```")
+            return "Your server has too many players to post in Discord, but our HastePaste request failed. Please try again later, or contact support."
+    return "```r\n"+str(table)+"```"
 
 
 def check_last_amount(bot, guild, name):
