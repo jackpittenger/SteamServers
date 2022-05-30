@@ -3,7 +3,7 @@ from discord import app_commands
 from discord.ext import commands
 class Basic(commands.Cog):
     def __init__(self, bot):
-        self.bot = bot; 
+        self.bot = bot 
 
     @app_commands.command(name="ping")
     @app_commands.guilds(discord.Object(441425708896747532))

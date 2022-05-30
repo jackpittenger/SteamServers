@@ -7,15 +7,20 @@ import discord
 from discord.ext import commands
 load_dotenv()
 
-cogs = ["cog.basic", "cog.valve"]
+cogs = ["cog.basic", "cog.valve", "cog.database"]
 
 class Bot(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix="s!", intents=discord.Intents.default())
 
     async def startup(self):
-        await bot.wait_until_ready();
-        await bot.tree.sync(guild=discord.Object(441425708896747532))
+        await bot.wait_until_ready()
+        if os.getenv("DEBUG"):
+            print("Debug mode on: syncing only to Steam Servers Support")
+            await bot.tree.sync(guild=discord.Object(441425708896747532))
+        else:
+            print("Production mode")
+            await bot.tree.sync()
         print("Successfully synced commands")
         print(f"Connected as {bot.user}")
 

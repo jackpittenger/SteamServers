@@ -7,8 +7,16 @@ from helpers import query_server_for_summary, query_server_for_players
 class Valve(commands.Cog):
     def __init__(self, bot):
         self.bot = bot;
+    
+    async def server_autocomplete(self, interaction: discord.Interaction, current: str):
+        servers = self.bot.db.servers.find({'discord_server': interaction.guild_id})
+        result_dict = []
+        for result in servers:
+            result_dict.append(discord.app_commands.Choice(name=result['name'], value=result['address']))
+        return result_dict
         
     @app_commands.command(name="query")
+    @app_commands.autocomplete(server_address=server_autocomplete)
     @app_commands.describe(
             server_address="The IP:Port to query. For example, 144.12.123.51:27017"
     )
@@ -25,6 +33,7 @@ class Valve(commands.Cog):
             await interaction.followup.send(embed=summary)
 
     @app_commands.command(name="query_players")
+    @app_commands.autocomplete(server_address=server_autocomplete)
     @app_commands.describe(
             server_address="The IP:Port to query. For example, 144.12.123.51:27017"
     )
