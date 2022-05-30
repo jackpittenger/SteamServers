@@ -71,13 +71,3 @@ async def query_server_for_players(address: str):
             return "Your server has too many players to post in Discord, but our HastePaste request failed. Please try again later, or contact support."
     return "```r\n"+str(table)+"```"
 
-
-def check_last_amount(bot, guild, name):
-    return bot.db.servers.find_one({'discord_server': guild, 'name': name})['timer']
-
-
-def set_last_amount(bot, guild, name, amount):
-    return bot.db.servers.update_one(
-        {'discord_server': guild, 'name': name},
-        {"$set": {'timer.last': amount}}
-    )

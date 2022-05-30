@@ -1,4 +1,3 @@
-import re
 from discord.ext import commands
 import discord
 from discord import app_commands
@@ -25,7 +24,7 @@ class Database(commands.Cog):
     @app_commands.guilds(discord.Object(441425708896747532))
     async def create(self, interaction: discord.Interaction, server_address: str, name: str) -> None:
         """
-        Create a new saved server
+        Create a new saved server. Requires MANAGE_GUILD
         """
         await interaction.response.defer()
         if self.bot.db.servers.count_documents({'discord_server': interaction.guild_id}) > 30:
@@ -37,6 +36,9 @@ class Database(commands.Cog):
     @app_commands.command(name="servers")
     @app_commands.guilds(discord.Object(441425708896747532))
     async def servers(self, interaction: discord.Interaction) -> None:
+        """
+        Lists saved servers 
+        """
         await interaction.response.defer()
         results = self.bot.db.servers.find({'discord_server': interaction.guild_id})
         hasResult = False
@@ -54,6 +56,9 @@ class Database(commands.Cog):
     @app_commands.checks.has_permissions(manage_guild=True)
     @app_commands.guilds(discord.Object(441425708896747532))
     async def delete_server(self, interaction: discord.Interaction, server_name: str) -> None:
+        """
+        Deletes a saved server. Requires MANAGE_GUILD
+        """
         await interaction.response.defer()
         result = self.bot.db.servers.delete_one({'discord_server': interaction.guild_id, 'name': server_name})
         if not result.deleted_count:
