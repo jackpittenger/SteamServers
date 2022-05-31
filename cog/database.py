@@ -18,7 +18,7 @@ class Database(commands.Cog):
     @app_commands.command(name="create_server")
     @app_commands.describe(
             server_address="The IP:Port to query. For example, 144.12.123.51:27017",
-            name="The name to give the servre. For example, Awesome RP"
+            name="The name to give the server. For example, Awesome RP"
     )
     @app_commands.checks.has_permissions(manage_guild=True)
     @app_commands.guilds(discord.Object(441425708896747532))
