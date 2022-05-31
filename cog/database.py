@@ -1,112 +1,72 @@
-import discord
-import re
 from discord.ext import commands
-from helpers import query_logic, players_logic, get_prefix
+import discord
+from discord import app_commands
+from helpers import query_server_for_summary, query_server_for_players  
 
 
 class Database(commands.Cog):
     def __init__(self, bot):
-        @bot.command()
-        @commands.has_permissions(manage_guild=True)
-        async def create(ctx, address, *, name):
-            """
-            Creates a saved server
-            s!create x.x.x.x:27017 Name
-            s!create 144.12.123.51:27017 ToasterRP
-            """
-            if bot.db.servers.count_documents({'discord_server': ctx.guild.id}) >= 5 and\
-                    (bot.db.exempt.count_documents({'server': ctx.guild.id}) == 0 or
-                     bot.db.servers.count_documents({'discord_server': ctx.guild.id}) >= 35):
-                return await ctx.send("Max servers reached! Please join the support server to request more servers")
-            bot.db.servers.insert_one({'discord_server': ctx.guild.id, 'address': address, 'name': name})
-            return await ctx.send(f'Added `{address}` as `{name}`')
-
-        @bot.command()
-        async def servers(ctx):
-            """
-            Returns a list of saved servers
-            s!servers
-            """
-            results = bot.db.servers.find({'discord_server': ctx.guild.id})
-            hasResult = False
-            embed = discord.Embed(title="Server list",
-                                  type='rich')
-            for result in results:
-                embed.add_field(name=result['name'], value=result['address'])
-                hasResult = True
-            if not hasResult: 
-                return await ctx.send("No servers added! Add one with "+get_prefix(bot, ctx.guild.id)+"create")
-            return await ctx.send(embed=embed)
-
-        @bot.command()
-        @commands.has_permissions(manage_guild=True)
-        async def delete(ctx, *, name):
-            """
-            Deletes a saved server
-            s!delete name
-            s!delete ToasterRP
-            """
-            result = bot.db.servers.delete_one({'discord_server': ctx.guild.id, 'name': name})
-            if not result.deleted_count:
-                return await ctx.send("The server was not found, and therefore not deleted!")
-            return await ctx.send(f'Server `{name}` was removed!')
-
-        @bot.command()
-        async def status(ctx, *, name=""):
-            """
-            Queries a saved server. If you only have one server you don't need to specify a name.
-            s!status
-            s!status name
-            s!status ToasterRP
-            """
-            return await _check_server(bot, ctx, name, query_logic)
-
-        @bot.command()
-        async def players(ctx, *, name=""):
-            """
-            Shows the players on a saved server. If you only have one server you don't need to specify a name.
-            s!players
-            s!players name
-            s!players ToasterRP
-            """
-            return await _check_server(bot, ctx, name, players_logic)
-
-        @bot.command()
-        @commands.has_permissions(manage_guild=True)
-        async def prefix(ctx, prefix):
-            """
-            Set a custom prefix (1-5 characters). Default s!
-
-            s!prefix prefix
-            s!prefix ?
-            s!prefix !
-            """
-            if len(prefix) < 1 or len(prefix) > 5:
-                return await ctx.send("Prefix must be between 1-5 characters")
-            bot.db.servers.update_one({'discord_server': ctx.guild.id}, {'$set': {'prefix': prefix}})
-            return await ctx.send(f"Prefix set to `{prefix}`")
-
-async def get_server(bot, ctx, name):
-    server = None
-    results = bot.db.servers.find({'discord_server': ctx.guild.id})
-    cnt = bot.db.servers.count_documents({'discord_server': ctx.guild.id})
-    if not cnt:
-        await ctx.send("No servers added! Add one with "+get_prefix(bot, ctx.guild.id)+"create")
-    elif name == "" and cnt == 1:
-        server = results[0]
-    else:
-        result = bot.db.servers.find_one({'discord_server': ctx.guild.id, 'name': { '$regex': re.compile('^'+name+'$', re.IGNORECASE) }})
-        if result:
-            server = result
+        self.bot = bot
+    
+    async def server_name_autocomplete(self, interaction: discord.Interaction, current: str):
+        servers = self.bot.db.servers.find({'discord_server': interaction.guild_id})
+        result_dict = []
+        for result in servers:
+            result_dict.append(discord.app_commands.Choice(name=result['name'], value=result['name']))
+        return result_dict
+    
+    @app_commands.command(name="create_server")
+    @app_commands.describe(
+            server_address="The IP:Port to query. For example, 144.12.123.51:27017",
+            name="The name to give the server. For example, Awesome RP"
+    )
+    @app_commands.checks.has_permissions(manage_guild=True)
+    async def create_server(self, interaction: discord.Interaction, server_address: str, name: str) -> None:
+        """
+        Create a new saved server. Requires MANAGE_GUILD
+        """
+        if len(name) < 1 or len(name) > 32:
+            await interaction.response.send_message("Name must be between 1 and 32 characters!")
+            return
+        await interaction.response.defer()
+        if self.bot.db.servers.count_documents({'discord_server': interaction.guild_id}) > 30:
+            await interaction.followup.send(content="You already have too many servers!")
+        elif self.bot.db.servers.find_one({'discord_server': interaction.guild_id,"$or":[ {"name":name}, {"address":server_address}]}) is not None:
+            await interaction.followup.send(content="Either this server name or server address is already being used!")
         else:
-            await ctx.send("Invalid server! Please choose one from "+get_prefix(bot, ctx.guild.id)+"servers")
-    return server
+            self.bot.db.servers.insert_one({'discord_server': interaction.guild_id, 'address': server_address, 'name': name})
+            await interaction.followup.send(content="Created!")
 
-async def _check_server(bot, ctx, name, func):
-    server = await get_server(bot, ctx, name)
-    if server:
-        return await func(ctx, server["address"], bot)
-    return None
+    @app_commands.command(name="servers")
+    async def servers(self, interaction: discord.Interaction) -> None:
+        """
+        Lists saved servers 
+        """
+        await interaction.response.defer()
+        results = self.bot.db.servers.find({'discord_server': interaction.guild_id})
+        embed = discord.Embed(title="Server list",
+                type='rich')
+        for result in results:
+            embed.add_field(name=result['name'], value=result['address'])
+        if results.retrieved == 0: 
+            await interaction.followup.send(content="No servers added! Add one with `/create_server`")
+            return
+        await interaction.followup.send(embed=embed)
 
-def setup(bot):
-    bot.add_cog(Database(bot))
+    @app_commands.command(name="delete_server")
+    @app_commands.autocomplete(server_name=server_name_autocomplete)
+    @app_commands.checks.has_permissions(manage_guild=True)
+    async def delete_server(self, interaction: discord.Interaction, server_name: str) -> None:
+        """
+        Deletes a saved server. Requires MANAGE_GUILD
+        """
+        await interaction.response.defer()
+        result = self.bot.db.servers.delete_one({'discord_server': interaction.guild_id, 'name': server_name})
+        if not result.deleted_count:
+            await interaction.followup.send(content="Server not found!")
+        else:
+            self.bot.db.auto.delete_many({'discord_server': interaction.guild_id, 'name': server_name})
+            await interaction.followup.send(content=f"Server `{server_name}` deleted")
+
+async def setup(bot: commands.Bot) -> None:
+    await bot.add_cog(Database(bot))
