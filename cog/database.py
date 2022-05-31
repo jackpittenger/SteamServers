@@ -15,20 +15,22 @@ class Database(commands.Cog):
             result_dict.append(discord.app_commands.Choice(name=result['name'], value=result['name']))
         return result_dict
     
-    @app_commands.command(name="create")
+    @app_commands.command(name="create_server")
     @app_commands.describe(
             server_address="The IP:Port to query. For example, 144.12.123.51:27017",
             name="The name to give the servre. For example, Awesome RP"
     )
     @app_commands.checks.has_permissions(manage_guild=True)
     @app_commands.guilds(discord.Object(441425708896747532))
-    async def create(self, interaction: discord.Interaction, server_address: str, name: str) -> None:
+    async def create_server(self, interaction: discord.Interaction, server_address: str, name: str) -> None:
         """
         Create a new saved server. Requires MANAGE_GUILD
         """
         await interaction.response.defer()
         if self.bot.db.servers.count_documents({'discord_server': interaction.guild_id}) > 30:
             await interaction.followup.send(content="You already have too many servers!")
+        elif self.bot.db.servers.find_one({'discord_server': interaction.guild_id,"$or":[ {"name":name}, {"address":server_address}]}) is not None:
+            await interaction.followup.send(content="Either this server name or server address is already being used!")
         else:
             self.bot.db.servers.insert_one({'discord_server': interaction.guild_id, 'address': server_address, 'name': name})
             await interaction.followup.send(content="Created!")
@@ -41,14 +43,13 @@ class Database(commands.Cog):
         """
         await interaction.response.defer()
         results = self.bot.db.servers.find({'discord_server': interaction.guild_id})
-        hasResult = False
         embed = discord.Embed(title="Server list",
                 type='rich')
         for result in results:
             embed.add_field(name=result['name'], value=result['address'])
-            hasResult = True
-        if not hasResult: 
-            await interaction.followup.send(content="No servers added! Add one with /create")
+        if results.retrieved == 0: 
+            await interaction.followup.send(content="No servers added! Add one with `/create_server`")
+            return
         await interaction.followup.send(embed=embed)
 
     @app_commands.command(name="delete_server")
@@ -64,6 +65,7 @@ class Database(commands.Cog):
         if not result.deleted_count:
             await interaction.followup.send(content="Server not found!")
         else:
+            self.bot.db.auto.delete_many({'discord_server': interaction.guild_id, 'name': server_name})
             await interaction.followup.send(content=f"Server `{server_name}` deleted")
 
 async def setup(bot: commands.Bot) -> None:

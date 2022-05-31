@@ -7,7 +7,7 @@ import discord
 from discord.ext import commands
 load_dotenv()
 
-cogs = ["cog.basic", "cog.valve", "cog.database"]
+cogs = ["cog.basic", "cog.valve", "cog.database", "cog.automation"]
 
 class Bot(commands.Bot):
     def __init__(self):
