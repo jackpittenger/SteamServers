@@ -10,6 +10,7 @@ jobs:
 
     steps:
     - name: "Free pycache"
+      continue-on-error: true
       run: |
         sudo chmod -R ugo+rwX __pycache__/
         cd cog/
