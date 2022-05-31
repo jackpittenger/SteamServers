@@ -19,7 +19,7 @@ jobs:
 
     - name: Install packages
       run: |
-        sudo python3.9 -m pip install -r requirements.txt
+        sudo python3.10 -m pip install -r requirements.txt
     - name: Create .env
       run: |
         echo "TOKEN=${{ secrets.TOKEN }}" >> .env
