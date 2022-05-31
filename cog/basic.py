@@ -6,7 +6,6 @@ class Basic(commands.Cog):
         self.bot = bot 
 
     @app_commands.command(name="ping")
-    @app_commands.guilds(discord.Object(441425708896747532))
     async def ping(self, interaction: discord.Interaction) -> None:
         """
         Pings the bot

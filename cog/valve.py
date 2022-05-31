@@ -20,7 +20,6 @@ class Valve(commands.Cog):
     @app_commands.describe(
             server_address="The IP:Port to query. For example, 144.12.123.51:27017"
     )
-    @app_commands.guilds(discord.Object(441425708896747532))
     async def query(self, interaction: discord.Interaction, server_address: str):
         """
         Queries a server
@@ -37,7 +36,6 @@ class Valve(commands.Cog):
     @app_commands.describe(
             server_address="The IP:Port to query. For example, 144.12.123.51:27017"
     )
-    @app_commands.guilds(discord.Object(441425708896747532))
     async def query_players(self, interaction: discord.Interaction, server_address: str):
         """
         Queries a server and returns the players

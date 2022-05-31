@@ -15,7 +15,7 @@ class Bot(commands.Bot):
 
     async def startup(self):
         await bot.wait_until_ready()
-        if os.getenv("DEBUG"):
+        if os.getenv("DEBUG") == "true":
             print("Debug mode on: syncing only to Steam Servers Support")
             await bot.tree.sync(guild=discord.Object(441425708896747532))
         else:

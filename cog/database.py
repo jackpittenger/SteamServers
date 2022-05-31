@@ -21,11 +21,13 @@ class Database(commands.Cog):
             name="The name to give the server. For example, Awesome RP"
     )
     @app_commands.checks.has_permissions(manage_guild=True)
-    @app_commands.guilds(discord.Object(441425708896747532))
     async def create_server(self, interaction: discord.Interaction, server_address: str, name: str) -> None:
         """
         Create a new saved server. Requires MANAGE_GUILD
         """
+        if len(name) < 1 or len(name) > 32:
+            await interaction.response.send_message("Name must be between 1 and 32 characters!")
+            return
         await interaction.response.defer()
         if self.bot.db.servers.count_documents({'discord_server': interaction.guild_id}) > 30:
             await interaction.followup.send(content="You already have too many servers!")
@@ -36,7 +38,6 @@ class Database(commands.Cog):
             await interaction.followup.send(content="Created!")
 
     @app_commands.command(name="servers")
-    @app_commands.guilds(discord.Object(441425708896747532))
     async def servers(self, interaction: discord.Interaction) -> None:
         """
         Lists saved servers 
@@ -55,7 +56,6 @@ class Database(commands.Cog):
     @app_commands.command(name="delete_server")
     @app_commands.autocomplete(server_name=server_name_autocomplete)
     @app_commands.checks.has_permissions(manage_guild=True)
-    @app_commands.guilds(discord.Object(441425708896747532))
     async def delete_server(self, interaction: discord.Interaction, server_name: str) -> None:
         """
         Deletes a saved server. Requires MANAGE_GUILD
