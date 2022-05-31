@@ -24,6 +24,10 @@ class Automation(commands.Cog):
             result_dict.append(discord.app_commands.Choice(name=result['name'], value=result['name']))
         return result_dict
 
+    async def auto_autocomplete(self, interaction: discord.Interaction, current: str):
+        autos = self.bot.db.auto.find({'discord_server': interaction.guild_id})
+        return [discord.app_commands.Choice(name=auto['name']+" | "+AutomationType(auto["auto_type"]).name.upper(), value=auto['name']+str(auto["auto_type"])) for auto in autos]
+
     @app_commands.command(name="create_auto")
     @app_commands.checks.has_permissions(manage_guild=True)
     @app_commands.autocomplete(server_name=server_name_autocomplete)
@@ -63,16 +67,22 @@ class Automation(commands.Cog):
         await interaction.followup.send(embed=embed)
 
     @app_commands.command(name="delete_auto")
-    @app_commands.describe(
-            name="The server name to query",
-    )
+    @app_commands.autocomplete(auto=auto_autocomplete)
     @app_commands.checks.has_permissions(manage_guild=True)
+    @app_commands.describe(
+            auto="The auto to delete"
+    )
     @app_commands.guilds(discord.Object(441425708896747532))
-    async def delete_auto(self, interaction: discord.Interaction, name: str):
+    async def delete_auto(self, interaction: discord.Interaction, auto: str):
         """
         Removes an auto
         """
-        await interaction.response.send_message("Auto deleted!")
+        await interaction.response.defer()
+        result = self.bot.db.auto.delete_one({'discord_server':interaction.guild_id, 'name':auto[:-1], 'auto_type': int(auto[-1])})
+        if not result.deleted_count:
+            await interaction.followup.send(content="Auto not found!")
+        else:
+            await interaction.followup.send(content="Auto deleted!")
 
 class Threaded(Thread):
     def __init__(self, bot):
