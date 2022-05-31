@@ -19,7 +19,7 @@ jobs:
 
     - name: Install packages
       run: |
-        sudo python3.7 -m pip install -r requirements.txt
+        sudo python3.9 -m pip install -r requirements.txt
     - name: Create .env
       run: |
         echo "TOKEN=${{ secrets.TOKEN }}" >> .env
@@ -31,4 +31,4 @@ jobs:
         echo "DBL_TOKEN=${{ secrets.DBL_TOKEN }}" >> .env
     - name: Run server
       run: |
-        pm2 restart index.py
+        pm2 restart index.py 
