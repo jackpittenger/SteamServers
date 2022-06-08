@@ -37,7 +37,6 @@ class Automation(commands.Cog):
             auto_type="Should this query for a summary (as in query) or players (as in query_players)",
             channel="What channel should updates be sent to?"
     )
-    @app_commands.guilds(discord.Object(441425708896747532))
     async def create_auto(self, interaction: discord.Interaction, server_name: str, minutes: app_commands.Range[int, 10, 10080], auto_type: AutomationType, channel : discord.TextChannel):
         """
         Queries a saved server automatically in a defined interval in a defined channel. Requires MANAGE_GUILD
@@ -59,7 +58,6 @@ class Automation(commands.Cog):
 
     @app_commands.command(name="list_autos")
     @app_commands.checks.has_permissions(manage_guild=True)
-    @app_commands.guilds(discord.Object(441425708896747532))
     async def list_autos(self, interaction: discord.Interaction):
         """
         List the currently setup autos. Requires MANAGE_GUILD
@@ -80,7 +78,6 @@ class Automation(commands.Cog):
     @app_commands.describe(
             auto="The auto to delete"
     )
-    @app_commands.guilds(discord.Object(441425708896747532))
     async def delete_auto(self, interaction: discord.Interaction, auto: str):
         """
         Deletes a saved auto. Requires MANAGE_GUILD 
