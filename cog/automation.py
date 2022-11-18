@@ -50,7 +50,7 @@ class Automation(commands.Cog):
             await interaction.followup.send(content="That server doesn't exist!")
         elif self.bot.db.auto.find_one({'discord_server': interaction.guild_id, 'name': server_name, 'auto_type': auto_type.value}) is not None:
             await interaction.followup.send(content="This server already has an auto of this type! To readd it, please delete it first")
-        elif self.bot.db.auto.count_documents({'discord_server': interaction.guild_id}) >= 5:
+        elif self.bot.db.exempt.count_documents({'discord_server': interaction.guild_id}) == 0 and self.bot.db.auto.count_documents({'discord_server': interaction.guild_id}) >= 5:
             await interaction.followup.send(content="You already have the max amount of autos added! To get more, please message on the support Discord (https://discord.gg/EKVQPxF).")
         else:
             self.bot.db.auto.insert_one({'discord_server': interaction.guild_id, 'name': server_name, 'address': server['address'], 'auto_type': auto_type.value, 'frequency': minutes*60, 'last_update': 0, 'channel': channel.id})

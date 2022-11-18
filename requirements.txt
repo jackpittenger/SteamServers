@@ -4,4 +4,4 @@ python-a2s
 dblpy
 requests
 beautifultable
-git+https://github.com/Rapptz/discord.py@f24f34e3f1fc350664cc93b1f57510bd9c714a7b
+discord.py==2.1.0
