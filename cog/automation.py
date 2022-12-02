@@ -118,6 +118,8 @@ class Threaded(Thread):
                 # Get channel
                 channel = bot.get_channel(auto["channel"])
                 if channel is None or not isinstance(channel, discord.TextChannel):
+                    print("Deleting failed auto due to improper channel")
+                    bot.db.auto.delete_one({"_id": auto["_id"]})
                     raise Exception("Unable to access channel or channel is not a text channel")
                 else:
                     if isinstance(msg, str):
